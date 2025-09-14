@@ -24,6 +24,10 @@ class Korisnik{
         }
     }
 
+    public function createKorisnik($username, $password) {
+        $stmt = $this->conn->prepare("INSERT INTO korisnici (username, password) VALUES (?, ?)");
+        return $stmt->execute([$username, $password]);
+    }
    
     public function getKorisnik($username) {
         $stmt = $this->conn->prepare("SELECT * FROM $this->table WHERE username = :username");

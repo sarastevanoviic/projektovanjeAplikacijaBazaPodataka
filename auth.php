@@ -28,6 +28,17 @@ class Auth {
         return false;
     }
 
+    public function register($username, $password) {
+    
+    $user = $this->korisnik->getKorisnik($username);
+    if ($user) {
+        return false; 
+    }
+    $hashedPassword = password_hash($password, PASSWORD_DEFAULT);
+
+    return $this->korisnik->createKorisnik($username, $hashedPassword);
+   }
+
     public function logout() { //logout
         unset($_SESSION['korisnik']);
         session_destroy();
@@ -37,7 +48,7 @@ class Auth {
         return isset($_SESSION['korisnik']);
     }
 
-    public function getUser() { //vrača podatke o k0r
+    public function getUser() { //vraća podatke o k0r
         return $_SESSION['korisnik'] ?? null;
     }
 }
