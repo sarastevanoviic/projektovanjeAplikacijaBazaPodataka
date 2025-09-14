@@ -9,14 +9,14 @@ class Galerija {
     }
 
     public function create($data) {
-        $sql = "INSERT INTO $this->table (naziv, adresa) VALUES (?, ?)";
+        $sql = "INSERT INTO $this->table (naziv_galerije, adresa) VALUES (?, ?)";
         $stmt = $this->conn->prepare($sql);
-        $stmt->bind_param("ss", $data['naziv'], $data['adresa']);
+        $stmt->bind_param("ss", $data['naziv_galerije'], $data['adresa']);
         return $stmt->execute();
     }
 
     public function read($id) {
-        $sql = "SELECT * FROM $this->table WHERE idgalerije = ?";
+        $sql = "SELECT * FROM $this->table WHERE id_galerije = ?";
         $stmt = $this->conn->prepare($sql);
         $stmt->bind_param("i", $id);
         $stmt->execute();
@@ -25,14 +25,14 @@ class Galerija {
     }
 
     public function update($id, $data) {
-        $sql = "UPDATE $this->table SET naziv = ?, adresa = ? WHERE idgalerije = ?";
+        $sql = "UPDATE $this->table SET naziv_galerije = ?, adresa = ? WHERE id_galerije = ?";
         $stmt = $this->conn->prepare($sql);
-        $stmt->bind_param("ssi", $data['naziv'], $data['adresa'], $id);
+        $stmt->bind_param("ssi", $data['naziv_galerije'], $data['adresa'], $id);
         return $stmt->execute();
     }
 
     public function delete($id) {
-        $sql = "DELETE FROM $this->table WHERE idgalerije = ?";
+        $sql = "DELETE FROM $this->table WHERE id_galerije = ?";
         $stmt = $this->conn->prepare($sql);
         $stmt->bind_param("i", $id);
         return $stmt->execute();

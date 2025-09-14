@@ -11,10 +11,10 @@ if (!$auth->isLoggedIn()) { header('Location: login.php'); exit; }
 
 $model = new Umetnik($conn);
 
-// mala helper funkcija za XSS escape
+
 function e($s){ return htmlspecialchars((string)$s, ENT_QUOTES, 'UTF-8'); }
 
-// ROUTING: create / update / delete
+
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $action = $_POST['action'] ?? '';
     if ($action === 'create') {
@@ -28,7 +28,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         exit;
     }
     if ($action === 'update') {
-        $id   = (int)($_POST['idumetnika'] ?? 0);
+        $id   = (int)($_POST['id_umetnika'] ?? 0);
         $data = [
             'ime'        => $_POST['ime'] ?? '',
             'prezime'    => $_POST['prezime'] ?? '',
@@ -40,7 +40,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 }
 
-// delete preko GET (sa potvrdom na klijentu)
+
 if (($_GET['action'] ?? '') === 'delete' && isset($_GET['id'])) {
     $id = (int)$_GET['id'];
     $model->delete($id);
@@ -48,8 +48,8 @@ if (($_GET['action'] ?? '') === 'delete' && isset($_GET['id'])) {
     exit;
 }
 
-// Učitaj sve umetnike
-$umetnici = $conn->query("SELECT * FROM umetnik ORDER BY idumetnika DESC")->fetch_all(MYSQLI_ASSOC);
+
+$umetnici = $conn->query("SELECT * FROM umetnik ORDER BY id_umetnika DESC")->fetch_all(MYSQLI_ASSOC);
 ?>
 <!doctype html>
 <html lang="sr">
@@ -62,7 +62,7 @@ $umetnici = $conn->query("SELECT * FROM umetnik ORDER BY idumetnika DESC")->fetc
 <body class="bg-light">
 <div class="container py-4">
 
-  <!-- Forma: DODAJ UMETNIKA -->
+  
   <div class="card mb-4 shadow-sm">
     <div class="card-body">
       <h5 class="card-title">Dodaj umetnika</h5>
@@ -87,7 +87,7 @@ $umetnici = $conn->query("SELECT * FROM umetnik ORDER BY idumetnika DESC")->fetc
     </div>
   </div>
 
-  <!-- TABELA: UMETNICI + Akcije -->
+
   <div class="card shadow-sm">
     <div class="card-body">
       <div class="d-flex justify-content-between align-items-center mb-2">
@@ -112,14 +112,13 @@ $umetnici = $conn->query("SELECT * FROM umetnik ORDER BY idumetnika DESC")->fetc
               <td><?= e($u['prezime']) ?></td>
               <td><?= nl2br(e($u['biografija'])) ?></td>
               <td class="text-end">
-                <!-- Dugme: IZMENI (otvara modal) -->
+                
                 <button class="btn btn-sm btn-outline-secondary"
                         data-bs-toggle="modal"
                         data-bs-target="#editUmetnik<?= (int)$u['id_umetnika'] ?>">
                   Izmeni
                 </button>
 
-                <!-- Link: OBRIŠI -->
                 <a class="btn btn-sm btn-outline-danger"
                    href="?action=delete&id=<?= (int)$u['id_umetnika'] ?>"
                    onclick="return confirm('Da li sigurno želiš da obrišeš ovog umetnika?');">
@@ -128,7 +127,7 @@ $umetnici = $conn->query("SELECT * FROM umetnik ORDER BY idumetnika DESC")->fetc
               </td>
             </tr>
 
-            <!-- MODAL: Izmena umetnika -->
+          
             <div class="modal fade" id="editUmetnik<?= (int)$u['id_umetnika'] ?>" tabindex="-1" aria-hidden="true">
               <div class="modal-dialog">
                 <form class="modal-content" method="post">

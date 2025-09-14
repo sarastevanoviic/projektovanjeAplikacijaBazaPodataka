@@ -8,31 +8,33 @@ $model = new UmetnickoDelo($conn);
 function e($s){ return htmlspecialchars((string)$s, ENT_QUOTES, 'UTF-8'); }
 
 
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+if ($_SERVER['REQUEST_METHOD'] === 'POST'){  
     $action = $_POST['action'] ?? '';
     if ($action === 'create') {
-        $model->create([
-            'naziv'      => $_POST['naziv'],
-            'opis'       => $_POST['opis'],
-            'godina'     => (int)$_POST['godina'],
-            'idumetnik'  => (int)$_POST['idumetnik'],
-            'idgalerije' => (int)$_POST['idgalerije'],
-        ]);
-        header("Location: ".$_SERVER['PHP_SELF']);
-        exit;
-    }
+    $model->create([
+        'naziv_dela'  => $_POST['naziv_dela'],
+        'godina'      => (int)$_POST['godina'],
+        'tip'         => $_POST['tip'] ?? null,
+        'cena'        => $_POST['cena'] ?? null,
+        'id_umetnik'  => (int)$_POST['id_umetnik'],
+        'galerija_id' => (int)$_POST['galerija_id'],
+    ]);
+    header("Location: ".$_SERVER['PHP_SELF']);
+    exit;
+}
+}
     if ($action === 'update') {
-        $id = (int)$_POST['idumetnickogdela'];
-        $model->update($id, [
-            'naziv'      => $_POST['naziv'],
-            'opis'       => $_POST['opis'],
-            'godina'     => (int)$_POST['godina'],
-            'idumetnik'  => (int)$_POST['idumetnik'],
-            'idgalerije' => (int)$_POST['idgalerije'],
-        ]);
-        header("Location: ".$_SERVER['PHP_SELF']);
-        exit;
-    }
+    $id = (int)$_POST['id_umetnickogDela'];
+    $model->update($id, [
+        'naziv_dela'  => $_POST['naziv_dela'],
+        'godina'      => (int)$_POST['godina'],
+        'tip'         => $_POST['tip'] ?? null,
+        'cena'        => $_POST['cena'] ?? null,
+        'id_umetnik'  => (int)$_POST['id_umetnik'],
+        'galerija_id' => (int)$_POST['galerija_id'],
+    ]);
+    header("Location: ".$_SERVER['PHP_SELF']);
+    exit;
 }
 
 if (($_GET['action'] ?? '') === 'delete' && isset($_GET['id'])) {
@@ -41,8 +43,8 @@ if (($_GET['action'] ?? '') === 'delete' && isset($_GET['id'])) {
     exit;
 }
 
-// uzmi sve zapise
-$rez = $conn->query("SELECT * FROM umetnicko_delo ORDER BY idumetnickogdela DESC");
+
+$rez = $conn->query("SELECT * FROM `umetnickadela` ORDER BY `id_umetnickogDela` DESC");
 $umetnickaDela = $rez->fetch_all(MYSQLI_ASSOC);
 ?>
 <!doctype html>
@@ -56,33 +58,31 @@ $umetnickaDela = $rez->fetch_all(MYSQLI_ASSOC);
 <body class="bg-light">
 <div class="container py-4">
 
-  <!-- Forma: Dodaj umetničko delo -->
+  
   <div class="card mb-4 shadow-sm">
     <div class="card-body">
       <h5 class="card-title">Dodaj umetničko delo</h5>
       <form method="post" class="row g-3">
         <input type="hidden" name="action" value="create">
 
-        <div class="col-md-6">
-          <label class="form-label">Naziv</label>
-          <input name="naziv" class="form-control" required>
-        </div>
-        <div class="col-md-6">
-          <label class="form-label">Godina</label>
-          <input type="number" name="godina" class="form-control">
-        </div>
-        <div class="col-12">
-          <label class="form-label">Opis</label>
-          <textarea name="opis" class="form-control" rows="3"></textarea>
-        </div>
-        <div class="col-md-6">
-          <label class="form-label">ID umetnika</label>
-          <input type="number" name="idumetnik" class="form-control" required>
-        </div>
-        <div class="col-md-6">
-          <label class="form-label">ID galerije</label>
-          <input type="number" name="idgalerije" class="form-control">
-        </div>
+       <label class="form-label">Naziv dela</label>
+<input name="naziv_dela" class="form-control" required>
+
+<label class="form-label">Godina</label>
+<input type="number" name="godina" class="form-control">
+
+<label class="form-label">Tip</label>
+<input name="tip" class="form-control">
+
+<label class="form-label">Cena</label>
+<input type="number" step="0.01" name="cena" class="form-control">
+
+<label class="form-label">ID umetnika</label>
+<input type="number" name="id_umetnik" class="form-control" required>
+
+<label class="form-label">ID galerije</label>
+<input type="number" name="galerija_id" class="form-control">
+</div>
         <div class="col-12">
           <button class="btn btn-primary">Sačuvaj</button>
         </div>
@@ -90,7 +90,7 @@ $umetnickaDela = $rez->fetch_all(MYSQLI_ASSOC);
     </div>
   </div>
 
-  <!-- Tabela sa delima -->
+  
   <div class="card shadow-sm">
     <div class="card-body">
       <h5 class="card-title">Lista umetničkih dela</h5>
@@ -110,21 +110,23 @@ $umetnickaDela = $rez->fetch_all(MYSQLI_ASSOC);
           <tbody>
           <?php foreach($umetnickaDela as $d): ?>
             <tr>
-              <td><?= (int)$d['idumetnickogdela'] ?></td>
-              <td><?= e($d['naziv']) ?></td>
+              <td><?= (int)$d['id_umetnickogDela'] ?></td>
+              <td><?= e($d['naziv_dela']) ?></td>
               <td><?= e($d['godina']) ?></td>
-              <td><?= nl2br(e($d['opis'])) ?></td>
-              <td><?= (int)$d['idumetnik'] ?></td>
-              <td><?= (int)$d['idgalerije'] ?></td>
+              <td><?= e($d['tip']) ?></td>
+              <td><?= e($d['cena']) ?></td>
+              <td><?= (int)$d['id_umetnik'] ?></td>
+              <td><?= (int)$d['galerija_id'] ?></td>
+
               <td class="text-end">
-                <!-- Dugme Izmeni -->
+                
                 <button class="btn btn-sm btn-outline-secondary"
                         data-bs-toggle="modal"
-                        data-bs-target="#editDelo<?= (int)$d['idumetnickogdela'] ?>">
+                        data-bs-target="#editDelo<?= (int)$d['id_umetnickogDela'] ?>">
                   Izmeni
                 </button>
-                <!-- Link Obriši -->
-                <a href="?action=delete&id=<?= (int)$d['idumetnickogdela'] ?>"
+                
+                <a href="?action=delete&id=<?= (int)$d['id_umetnickogDela'] ?>"
                    class="btn btn-sm btn-outline-danger"
                    onclick="return confirm('Da li sigurno brišeš delo?');">
                    Obriši
@@ -132,7 +134,7 @@ $umetnickaDela = $rez->fetch_all(MYSQLI_ASSOC);
               </td>
             </tr>
 
-            <!-- Modal za izmenu -->
+           
             <div class="modal fade" id="editDelo<?= (int)$d['idumetnickogdela'] ?>" tabindex="-1">
               <div class="modal-dialog">
                 <form class="modal-content" method="post">
@@ -142,28 +144,27 @@ $umetnickaDela = $rez->fetch_all(MYSQLI_ASSOC);
                   </div>
                   <div class="modal-body">
                     <input type="hidden" name="action" value="update">
-                    <input type="hidden" name="idumetnickogdela" value="<?= (int)$d['idumetnickogdela'] ?>">
+                    <input type="hidden" name="id_umetnickogDela" value="<?= (int)$d['id_umetnickogDela'] ?>">
 
-                    <div class="mb-3">
-                      <label class="form-label">Naziv</label>
-                      <input name="naziv" class="form-control" value="<?= e($d['naziv']) ?>" required>
-                    </div>
-                    <div class="mb-3">
-                      <label class="form-label">Godina</label>
-                      <input type="number" name="godina" class="form-control" value="<?= e($d['godina']) ?>">
-                    </div>
-                    <div class="mb-3">
-                      <label class="form-label">Opis</label>
-                      <textarea name="opis" class="form-control" rows="3"><?= e($d['opis']) ?></textarea>
-                    </div>
-                    <div class="mb-3">
-                      <label class="form-label">ID umetnika</label>
-                      <input type="number" name="idumetnik" class="form-control" value="<?= (int)$d['idumetnik'] ?>">
-                    </div>
-                    <div class="mb-3">
-                      <label class="form-label">ID galerije</label>
-                      <input type="number" name="idgalerije" class="form-control" value="<?= (int)$d['idgalerije'] ?>">
-                    </div>
+                    <label class="form-label">Naziv dela</label>
+                    <input name="naziv_dela" class="form-control" value="<?= e($d['naziv_dela']) ?>" required>
+
+                    <label class="form-label">Godina</label>
+                    <input type="number" name="godina" class="form-control" value="<?= e($d['godina']) ?>">
+
+                    <label class="form-label">Tip</label>
+                    <input name="tip" class="form-control" value="<?= e($d['tip']) ?>">
+
+                    <label class="form-label">Cena</label>
+                    <input type="number" step="0.01" name="cena" class="form-control" value="<?= e($d['cena']) ?>">
+
+                    <label class="form-label">ID umetnika</label>
+                    <input type="number" name="id_umetnik" class="form-control" value="<?= (int)$d['id_umetnik'] ?>">
+
+                    <label class="form-label">ID galerije</label>
+                    <input type="number" name="galerija_id" class="form-control" value="<?= (int)$d['galerija_id'] ?>">
+ 
+                   </div>
                   </div>
                   <div class="modal-footer">
                     <button class="btn btn-primary">Sačuvaj izmene</button>

@@ -2,7 +2,8 @@
 require_once __DIR__ . '/crud.php';
 
 class Umetnik implements Crud {
-  private $conn; private $table="umetnik";
+  private $conn; 
+  private $table="umetnik";
   public function __construct($conn){ $this->conn=$conn; }
 
   public function create($data){
@@ -26,3 +27,4 @@ class Umetnik implements Crud {
     return $stmt->execute();
   }
 }
+?>

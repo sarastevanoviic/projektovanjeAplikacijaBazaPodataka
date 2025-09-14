@@ -5,31 +5,30 @@ require_once __DIR__ . '/../php/prodaja.php';
 
 $model = new Prodaja($conn);
 
-// helper za XSS escape
 function e($s){ return htmlspecialchars((string)$s, ENT_QUOTES, 'UTF-8'); }
 
-// ROUTING: create / update / delete
+
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $action = $_POST['action'] ?? '';
     if ($action === 'create') {
         $model->create([
-            'idumetnickogdela' => (int)$_POST['idumetnickogdela'],
-            'datum'            => $_POST['datum'],
-            'kupac'            => $_POST['kupac'],
-            'cena'             => (float)$_POST['cena'],
-            'galerija'         => $_POST['galerija'],
+            'umetnicko_delo_id' => (int)$_POST['umetnicko_delo_id'],
+            'datum'             => $_POST['datum'],
+            'kupac'             => $_POST['kupac'],
+            'cena'              => (float)$_POST['cena'],
+            'galerija_id'       => (int)$_POST['galerija_id'],
         ]);
         header("Location: ".$_SERVER['PHP_SELF']);
         exit;
     }
     if ($action === 'update') {
-        $id = (int)$_POST['idprodaje'];
+        $id = (int)$_POST['id_prodaje'];
         $model->update($id, [
-            'idumetnickogdela' => (int)$_POST['idumetnickogdela'],
-            'datum'            => $_POST['datum'],
-            'kupac'            => $_POST['kupac'],
-            'cena'             => (float)$_POST['cena'],
-            'galerija'         => $_POST['galerija'],
+            'umetnicko_delo_id' => (int)$_POST['umetnicko_delo_id'],
+            'datum'             => $_POST['datum'],
+            'kupac'             => $_POST['kupac'],
+            'cena'              => (float)$_POST['cena'],
+            'galerija_id'       => (int)$_POST['galerija_id'],
         ]);
         header("Location: ".$_SERVER['PHP_SELF']);
         exit;
@@ -42,12 +41,12 @@ if (($_GET['action'] ?? '') === 'delete' && isset($_GET['id'])) {
     exit;
 }
 
-// Učitavanje liste prodaja (sa nazivom dela ako postoji)
+
 $q = "
-  SELECT p.*, d.naziv AS delo_naziv
+  SELECT p.*, d.naziv_dela AS delo_naziv
   FROM prodaja p
-  LEFT JOIN umetnicko_delo d ON d.idumetnickogdela = p.idumetnickogdela
-  ORDER BY p.idprodaje DESC
+  LEFT JOIN umetnickadela d ON d.id_umetnickogDela = p.umetnicko_delo_id
+  ORDER BY p.id_prodaje DESC
 ";
 $prodaje = $conn->query($q)->fetch_all(MYSQLI_ASSOC);
 ?>
@@ -62,7 +61,6 @@ $prodaje = $conn->query($q)->fetch_all(MYSQLI_ASSOC);
 <body class="bg-light">
 <div class="container py-4">
 
-  <!-- Forma: Nova prodaja -->
   <div class="card mb-4 shadow-sm">
     <div class="card-body">
       <h5 class="card-title">Dodaj prodaju</h5>
@@ -71,7 +69,7 @@ $prodaje = $conn->query($q)->fetch_all(MYSQLI_ASSOC);
 
         <div class="col-md-4">
           <label class="form-label">ID umetničkog dela</label>
-          <input type="number" name="idumetnickogdela" class="form-control" required>
+          <input type="number" name="umetnicko_delo_id" class="form-control" required>
         </div>
         <div class="col-md-4">
           <label class="form-label">Datum</label>
@@ -86,8 +84,8 @@ $prodaje = $conn->query($q)->fetch_all(MYSQLI_ASSOC);
           <input name="kupac" class="form-control" required>
         </div>
         <div class="col-md-6">
-          <label class="form-label">Galerija</label>
-          <input name="galerija" class="form-control" placeholder="npr. Moderna galerija, Beograd">
+          <label class="form-label">ID galerije</label>
+          <input type="number" name="galerija_id" class="form-control">
         </div>
         <div class="col-12">
           <button class="btn btn-primary">Sačuvaj</button>
@@ -96,7 +94,7 @@ $prodaje = $conn->query($q)->fetch_all(MYSQLI_ASSOC);
     </div>
   </div>
 
-  <!-- Tabela: Prodaje -->
+  
   <div class="card shadow-sm">
     <div class="card-body">
       <div class="d-flex justify-content-between align-items-center mb-2">
@@ -112,29 +110,29 @@ $prodaje = $conn->query($q)->fetch_all(MYSQLI_ASSOC);
               <th>Datum</th>
               <th>Kupac</th>
               <th>Cena</th>
-              <th>Galerija</th>
+              <th>ID galerije</th>
               <th class="text-end">Akcije</th>
             </tr>
           </thead>
           <tbody>
           <?php foreach($prodaje as $p): ?>
             <tr>
-              <td><?= (int)$p['idprodaje'] ?></td>
-              <td><?= (int)$p['idumetnickogdela'] ?></td>
+              <td><?= (int)$p['id_prodaje'] ?></td>
+              <td><?= (int)$p['umetnicko_delo_id'] ?></td>
               <td><?= e($p['delo_naziv'] ?? '') ?></td>
               <td><?= e($p['datum']) ?></td>
               <td><?= e($p['kupac']) ?></td>
               <td><?= number_format((float)$p['cena'], 2, ',', '.') ?></td>
-              <td><?= e($p['galerija']) ?></td>
+              <td><?= (int)$p['galerija_id'] ?></td>
               <td class="text-end">
-                <!-- Izmeni -->
+              
                 <button class="btn btn-sm btn-outline-secondary"
                         data-bs-toggle="modal"
-                        data-bs-target="#editProdaja<?= (int)$p['idprodaje'] ?>">
+                        data-bs-target="#editProdaja<?= (int)$p['id_prodaje'] ?>">
                   Izmeni
                 </button>
-                <!-- Obriši -->
-                <a href="?action=delete&id=<?= (int)$p['idprodaje'] ?>"
+                
+                <a href="?action=delete&id=<?= (int)$p['id_prodaje'] ?>"
                    class="btn btn-sm btn-outline-danger"
                    onclick="return confirm('Obriši prodaju?');">
                   Obriši
@@ -142,21 +140,21 @@ $prodaje = $conn->query($q)->fetch_all(MYSQLI_ASSOC);
               </td>
             </tr>
 
-            <!-- Modal: Izmena prodaje -->
-            <div class="modal fade" id="editProdaja<?= (int)$p['idprodaje'] ?>" tabindex="-1" aria-hidden="true">
+       
+            <div class="modal fade" id="editProdaja<?= (int)$p['id_prodaje'] ?>" tabindex="-1" aria-hidden="true">
               <div class="modal-dialog">
                 <form class="modal-content" method="post">
                   <div class="modal-header">
-                    <h5 class="modal-title">Izmena prodaje #<?= (int)$p['idprodaje'] ?></h5>
+                    <h5 class="modal-title">Izmena prodaje #<?= (int)$p['id_prodaje'] ?></h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                   </div>
                   <div class="modal-body">
                     <input type="hidden" name="action" value="update">
-                    <input type="hidden" name="idprodaje" value="<?= (int)$p['idprodaje'] ?>">
+                    <input type="hidden" name="id_prodaje" value="<?= (int)$p['id_prodaje'] ?>">
 
                     <div class="mb-3">
                       <label class="form-label">ID umetničkog dela</label>
-                      <input type="number" name="idumetnickogdela" class="form-control" value="<?= (int)$p['idumetnickogdela'] ?>" required>
+                      <input type="number" name="umetnicko_delo_id" class="form-control" value="<?= (int)$p['umetnicko_delo_id'] ?>" required>
                     </div>
                     <div class="mb-3">
                       <label class="form-label">Datum</label>
@@ -171,8 +169,8 @@ $prodaje = $conn->query($q)->fetch_all(MYSQLI_ASSOC);
                       <input type="number" step="0.01" name="cena" class="form-control" value="<?= e($p['cena']) ?>" required>
                     </div>
                     <div class="mb-3">
-                      <label class="form-label">Galerija</label>
-                      <input name="galerija" class="form-control" value="<?= e($p['galerija']) ?>">
+                      <label class="form-label">ID galerije</label>
+                      <input type="number" name="galerija_id" class="form-control" value="<?= (int)$p['galerija_id'] ?>">
                     </div>
                   </div>
                   <div class="modal-footer">

@@ -1,12 +1,10 @@
 <?php
 require_once __DIR__ . '/../baza/db.php';
-require_once __DIR__ . '/../php/korisnik.php';
+require_once __DIR__ . '/../php/korisnik.php'; 
 require_once __DIR__ . '/../php/auth.php';
-
 
 $auth = new Auth($conn);
 
-// Ako je već ulogovan → na početnu
 if ($auth->isLoggedIn()) {
   header('Location: index.php');
   exit;
@@ -57,7 +55,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
           <form method="post" novalidate>
             <div class="mb-3">
               <label class="form-label">Korisničko ime</label>
-              <input class="form-control" name="username" required autocomplete="username"
+              <input class="form-control" name="username" required autocomplete="username" autofocus
                      value="<?= isset($u) ? htmlspecialchars($u, ENT_QUOTES, 'UTF-8') : '' ?>">
             </div>
             <div class="mb-3">

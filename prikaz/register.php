@@ -1,6 +1,6 @@
 <?php
 require_once __DIR__ . '/../baza/db.php';
-require_once __DIR__ . '/../php/korisnik.php';
+require_once __DIR__ . '/../php/korisnik.php'; 
 require_once __DIR__ . '/../php/auth.php';
 
 $auth = new Auth($conn);
@@ -8,11 +8,11 @@ $msg = '';
 $err = '';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-  // Bezbednije dohvaćanje unosa
+ 
   $u = isset($_POST['username']) ? trim($_POST['username']) : '';
   $p = $_POST['password'] ?? '';
 
-  // Jednostavna validacija
+  
   if ($u === '' || $p === '') {
     $err = 'Popuni korisničko ime i lozinku.';
   } elseif (mb_strlen($u) < 3) {
@@ -21,8 +21,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $err = 'Lozinka mora imati bar 4 karaktera.';
   } else {
     if ($auth->register($u, $p)) {
-      // Ako želiš odmah preusmerenje na login:
-      // header('Location: login.php?ok=1'); exit;
+     
       $msg = 'Uspešno! Sada se prijavi.';
     } else {
       $err = 'Korisničko ime već postoji ili je došlo do greške.';
@@ -56,11 +55,22 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
           <form method="post" novalidate>
             <div class="mb-3">
               <label class="form-label">Korisničko ime</label>
-              <input class="form-control" name="username" required>
+              <input class="form-control"
+                     name="username"
+                     required
+                     minlength="3"
+                     autocomplete="username"
+                     autofocus
+                     value="<?= isset($u) ? htmlspecialchars($u, ENT_QUOTES, 'UTF-8') : '' ?>">
             </div>
             <div class="mb-3">
               <label class="form-label">Lozinka</label>
-              <input type="password" class="form-control" name="password" required>
+              <input type="password"
+                     class="form-control"
+                     name="password"
+                     required
+                     minlength="4"
+                     autocomplete="new-password">
             </div>
             <button class="btn btn-success w-100">Registruj se</button>
           </form>

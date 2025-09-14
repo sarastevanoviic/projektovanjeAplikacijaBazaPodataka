@@ -9,21 +9,21 @@ class Prodaja {
     }
 
     public function create($data) {
-        $sql = "INSERT INTO $this->table (idumetnickogdela, datum, kupac, cena, galerija) 
+        $sql = "INSERT INTO $this->table (umetnicko_delo_id, datum, kupac, cena, galerija_id) 
                 VALUES (?, ?, ?, ?, ?)";
         $stmt = $this->conn->prepare($sql);
         $stmt->bind_param("issds", 
-            $data['idumetnickogdela'], 
+            $data['umetnicko_delo_id'], 
             $data['datum'], 
             $data['kupac'], 
             $data['cena'], 
-            $data['galerija']
+            $data['galerija_id']
         );
         return $stmt->execute();
     }
 
     public function read($id) {
-        $sql = "SELECT * FROM $this->table WHERE idprodaje = ?";
+        $sql = "SELECT * FROM $this->table WHERE id_prodaje = ?";
         $stmt = $this->conn->prepare($sql);
         $stmt->bind_param("i", $id);
         $stmt->execute();
@@ -33,22 +33,22 @@ class Prodaja {
 
     public function update($id, $data) {
         $sql = "UPDATE $this->table 
-                SET idumetnickogdela = ?, datum = ?, kupac = ?, cena = ?, galerija = ? 
-                WHERE idprodaje = ?";
+                SET umetnicko_delo_id = ?, datum = ?, kupac = ?, cena = ?, galerija_id = ? 
+                WHERE id_prodaje = ?";
         $stmt = $this->conn->prepare($sql);
         $stmt->bind_param("issdsi", 
-            $data['idumetnickogdela'],
+            $data['umetnicko_delo_id'],
             $data['datum'],
             $data['kupac'],
             $data['cena'],
-            $data['galerija'],
+            $data['galerija_id'],
             $id
         );
         return $stmt->execute();
     }
 
     public function delete($id) {
-        $sql = "DELETE FROM $this->table WHERE idprodaje = ?";
+        $sql = "DELETE FROM $this->table WHERE id_prodaje = ?";
         $stmt = $this->conn->prepare($sql);
         $stmt->bind_param("i", $id);
         return $stmt->execute();

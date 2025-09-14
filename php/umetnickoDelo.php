@@ -1,30 +1,32 @@
 <?php
 class UmetnickoDelo {
     private $conn;
-    private $table = "umetnicko_delo";
+    private $table = "umetnicka_dela";
 
     public function __construct($conn) {
         $this->conn = $conn;
     }
 
-    // CREATE
-    public function create($data) {
-        $sql = "INSERT INTO $this->table (naziv, opis, godina, idumetnik, idgalerije) 
-                VALUES (?, ?, ?, ?, ?)";
+    
+     public function create($data) {
+        $sql = "INSERT INTO $this->table (naziv_dela, tip, godina, cena, id_umetnik, galerija_id) 
+                VALUES (?, ?, ?, ?, ?, ?)";
         $stmt = $this->conn->prepare($sql);
-        $stmt->bind_param("ssiii", 
-            $data['naziv'], 
-            $data['opis'], 
+      
+        $stmt->bind_param("ssidii", 
+            $data['naziv_dela'], 
+            $data['tip'], 
             $data['godina'], 
-            $data['idumetnik'], 
-            $data['idgalerije']
+            $data['cena'], 
+            $data['id_umetnik'], 
+            $data['galerija_id']
         );
         return $stmt->execute();
     }
 
-    // READ
-    public function read($id) {
-        $sql = "SELECT * FROM $this->table WHERE idumetnickogdela = ?";
+   
+     public function read($id) {
+        $sql = "SELECT * FROM $this->table WHERE id_umetnickogDela = ?";
         $stmt = $this->conn->prepare($sql);
         $stmt->bind_param("i", $id);
         $stmt->execute();
@@ -32,26 +34,28 @@ class UmetnickoDelo {
         return $result->fetch_assoc();
     }
 
-    // UPDATE
+    
     public function update($id, $data) {
         $sql = "UPDATE $this->table 
-                SET naziv = ?, opis = ?, godina = ?, idumetnik = ?, idgalerije = ? 
-                WHERE idumetnickogdela = ?";
+                SET naziv_dela = ?, tip = ?, godina = ?, cena = ?, id_umetnik = ?, galerija_id = ? 
+                WHERE id_umetnickogDela = ?";
         $stmt = $this->conn->prepare($sql);
-        $stmt->bind_param("ssiiii",
-            $data['naziv'],
-            $data['opis'],
+        $stmt->bind_param("ssidiii",
+            $data['naziv_dela'],
+            $data['tip'],
             $data['godina'],
-            $data['idumetnik'],
-            $data['idgalerije'],
+            $data['cena'],
+            $data['id_umetnik'],
+            $data['galerija_id'],
             $id
         );
         return $stmt->execute();
     }
 
-    // DELETE
+
+    
     public function delete($id) {
-        $sql = "DELETE FROM $this->table WHERE idumetnickogdela = ?";
+        $sql = "DELETE FROM $this->table WHERE id_umetnickogDela = ?";
         $stmt = $this->conn->prepare($sql);
         $stmt->bind_param("i", $id);
         return $stmt->execute();

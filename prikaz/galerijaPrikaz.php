@@ -1,29 +1,29 @@
 <?php
+
 require_once __DIR__ . '/../baza/db.php';
 require_once __DIR__ . '/../php/galerija.php';
 
-// instanca modela
+
 $model = new Galerija($conn);
 
-// helper funkcija
+
 function e($s){ return htmlspecialchars((string)$s, ENT_QUOTES, 'UTF-8'); }
 
-// ROUTING
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $action = $_POST['action'] ?? '';
     if ($action === 'create') {
         $model->create([
-            'naziv'  => $_POST['naziv'],
-            'adresa' => $_POST['adresa']
+            'naziv_galerije' => $_POST['naziv_galerije'],
+            'adresa'         => $_POST['adresa']
         ]);
         header("Location: ".$_SERVER['PHP_SELF']);
         exit;
     }
     if ($action === 'update') {
-        $id = (int)$_POST['idgalerije'];
+        $id = (int)$_POST['id_galerije'];
         $model->update($id, [
-            'naziv'  => $_POST['naziv'],
-            'adresa' => $_POST['adresa']
+            'naziv_galerije' => $_POST['naziv_galerije'],
+            'adresa'         => $_POST['adresa']
         ]);
         header("Location: ".$_SERVER['PHP_SELF']);
         exit;
@@ -35,8 +35,8 @@ if (($_GET['action'] ?? '') === 'delete' && isset($_GET['id'])) {
     exit;
 }
 
-// učitaj sve
-$galerije = $conn->query("SELECT * FROM galerija ORDER BY idgalerije DESC")->fetch_all(MYSQLI_ASSOC);
+
+$galerije = $conn->query("SELECT * FROM `umetnickadela` ORDER BY `id_galerije` DESC")->fetch_all(MYSQLI_ASSOC);
 ?>
 <!doctype html>
 <html lang="sr">
@@ -49,7 +49,7 @@ $galerije = $conn->query("SELECT * FROM galerija ORDER BY idgalerije DESC")->fet
 <body class="bg-light">
 <div class="container py-4">
 
-  <!-- Forma: Dodaj galeriju -->
+  
   <div class="card mb-4 shadow-sm">
     <div class="card-body">
       <h5 class="card-title">Dodaj galeriju</h5>
@@ -57,7 +57,7 @@ $galerije = $conn->query("SELECT * FROM galerija ORDER BY idgalerije DESC")->fet
         <input type="hidden" name="action" value="create">
         <div class="col-md-6">
           <label class="form-label">Naziv</label>
-          <input type="text" name="naziv" class="form-control" required>
+          <input type="text" name="naziv_galerije" class="form-control" required>
         </div>
         <div class="col-md-6">
           <label class="form-label">Adresa</label>
@@ -70,7 +70,6 @@ $galerije = $conn->query("SELECT * FROM galerija ORDER BY idgalerije DESC")->fet
     </div>
   </div>
 
-  <!-- Tabela galerija -->
   <div class="card shadow-sm">
     <div class="card-body">
       <h5 class="card-title">Lista galerija</h5>
@@ -87,18 +86,18 @@ $galerije = $conn->query("SELECT * FROM galerija ORDER BY idgalerije DESC")->fet
           <tbody>
           <?php foreach($galerije as $g): ?>
             <tr>
-              <td><?= (int)$g['idgalerije'] ?></td>
-              <td><?= e($g['naziv']) ?></td>
+              <td><?= (int)$g['id_galerije'] ?></td>
+              <td><?= e($g['naziv_galerije']) ?></td>
               <td><?= e($g['adresa']) ?></td>
               <td class="text-end">
-                <!-- Izmeni -->
+              
                 <button class="btn btn-sm btn-outline-secondary"
                         data-bs-toggle="modal"
-                        data-bs-target="#editGalerija<?= (int)$g['idgalerije'] ?>">
+                        data-bs-target="#editGalerija<?= (int)$g['id_galerije'] ?>">
                   Izmeni
                 </button>
-                <!-- Obriši -->
-                <a href="?action=delete&id=<?= (int)$g['idgalerije'] ?>"
+                
+                <a href="?action=delete&id=<?= (int)$g['id_galerije'] ?>"
                    class="btn btn-sm btn-outline-danger"
                    onclick="return confirm('Obriši galeriju?');">
                   Obriši
@@ -106,21 +105,21 @@ $galerije = $conn->query("SELECT * FROM galerija ORDER BY idgalerije DESC")->fet
               </td>
             </tr>
 
-            <!-- Modal za izmenu -->
-            <div class="modal fade" id="editGalerija<?= (int)$g['idgalerije'] ?>" tabindex="-1">
+          
+            <div class="modal fade" id="editGalerija<?= (int)$g['id_galerije'] ?>" tabindex="-1">
               <div class="modal-dialog">
                 <form class="modal-content" method="post">
                   <div class="modal-header">
-                    <h5 class="modal-title">Izmena galerije #<?= (int)$g['idgalerije'] ?></h5>
+                    <h5 class="modal-title">Izmena galerije #<?= (int)$g['id_galerije'] ?></h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                   </div>
                   <div class="modal-body">
                     <input type="hidden" name="action" value="update">
-                    <input type="hidden" name="idgalerije" value="<?= (int)$g['idgalerije'] ?>">
+                    <input type="hidden" name="id_galerije" value="<?= (int)$g['id_galerije'] ?>">
 
                     <div class="mb-3">
                       <label class="form-label">Naziv</label>
-                      <input name="naziv" class="form-control" value="<?= e($g['naziv']) ?>" required>
+                      <input name="naziv_galerije" class="form-control" value="<?= e($g['naziv_galerije']) ?>" required>
                     </div>
                     <div class="mb-3">
                       <label class="form-label">Adresa</label>

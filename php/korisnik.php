@@ -7,7 +7,6 @@ class Korisnik {
         $this->conn = $conn; 
     }
 
-    // Vrati korisnika po korisničkom imenu
     public function getKorisnik(string $username): ?array {
         $sql = "SELECT id_korisnika, korisnicko_ime, lozinka 
                 FROM {$this->table} 
@@ -19,7 +18,7 @@ class Korisnik {
         return $rez ?: null;
     }
 
-    // Kreiraj korisnika (trenutno plain lozinka; po želji pređi na hash)
+    
     public function createKorisnik(string $username, string $password): bool {
         $sql = "INSERT INTO {$this->table} (korisnicko_ime, lozinka) VALUES (?, ?)";
         $stmt = $this->conn->prepare($sql);
