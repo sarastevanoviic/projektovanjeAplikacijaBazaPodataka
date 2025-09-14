@@ -1,8 +1,7 @@
 <?php
-require_once 'db.php';
-require_once 'auth.php';
-require_once 'umetnik.php';
-
+require_once __DIR__ . '/../baza/db.php';
+require_once __DIR__ . '/../php/auth.php';
+require_once __DIR__ . '/../php/umetnik.php';
 $auth = new Auth($conn);
 if (!$auth->isLoggedIn()) { header('Location: login.php'); exit; }
 
@@ -16,7 +15,7 @@ $prezime   = trim($_POST['prezime'] ?? '');
 $biografija= trim($_POST['biografija'] ?? '');
 
 if ($ime === '' || $prezime === '') {
-  // minimalna validacija
+
   header('Location: index.php?err=Unesi+ime+i+prezime');
   exit;
 }
@@ -30,3 +29,4 @@ $ok = $um->create([
 
 header('Location: index.php?'.($ok ? 'ok=1' : 'err=Gre%C5%A1ka+pri+upisu'));
 exit;
+?>

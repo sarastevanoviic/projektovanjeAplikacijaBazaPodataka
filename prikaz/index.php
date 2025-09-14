@@ -83,11 +83,11 @@ function e($s){ return htmlspecialchars((string)$s, ENT_QUOTES, 'UTF-8'); }
                   <td class="text-end">
                     <button class="btn btn-sm btn-outline-secondary"
                             data-bs-toggle="modal"
-                            data-bs-target="#edit<?= (int)$r['idumetnika'] ?>">
+                            data-bs-target="#edit<?= (int)$r['id_umetnika'] ?>">
                       Izmeni
                     </button>
                     <a class="btn btn-sm btn-outline-danger"
-                       href="umetnik_delete.php?id=<?= (int)$r['idumetnika'] ?>"
+                       href="umetnik_delete.php?id=<?= (int)$r['id_umetnika'] ?>"
                        onclick="return confirm('Obriši umetnika?');">
                       Obriši
                     </a>

@@ -1,7 +1,7 @@
 <?php
-require_once 'db.php';
-require_once 'auth.php';
-require_once 'umetnik.php';
+require_once __DIR__ . '/../baza/db.php';
+require_once __DIR__ . '/../php/auth.php';
+require_once __DIR__ . '/../php/umetnik.php';
 
 $auth = new Auth($conn);
 if (!$auth->isLoggedIn()) { header('Location: login.php'); exit; }
@@ -11,7 +11,7 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
   exit;
 }
 
-$id        = (int)($_POST['id'] ?? 0);
+$id        = (int)($_POST['id_umetnika'] ?? 0);
 $ime       = trim($_POST['ime'] ?? '');
 $prezime   = trim($_POST['prezime'] ?? '');
 $biografija= trim($_POST['biografija'] ?? '');
@@ -30,3 +30,4 @@ $ok  = $mdl->update($id, [
 
 header('Location: index.php?'.($ok ? 'ok=1' : 'err=Greška+pri+izmeni'));
 exit;
+?>
