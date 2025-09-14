@@ -45,7 +45,7 @@ if (($_GET['action'] ?? '') === 'delete' && isset($_GET['id'])) {
 $q = "
   SELECT p.*, d.naziv_dela AS delo_naziv
   FROM prodaja p
-  LEFT JOIN umetnickadela d ON d.id_umetnickogDela = p.umetnicko_delo_id
+  LEFT JOIN umetnicka_dela d ON d.id_umetnickogDela = p.umetnicko_delo_id
   ORDER BY p.id_prodaje DESC
 ";
 $prodaje = $conn->query($q)->fetch_all(MYSQLI_ASSOC);

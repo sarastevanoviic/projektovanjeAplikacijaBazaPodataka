@@ -44,7 +44,7 @@ if (($_GET['action'] ?? '') === 'delete' && isset($_GET['id'])) {
 }
 
 
-$rez = $conn->query("SELECT * FROM `umetnickadela` ORDER BY `id_umetnickogDela` DESC");
+$rez = $conn->query("SELECT * FROM `umetnicka_dela` ORDER BY `id_umetnickogDela` DESC");
 $umetnickaDela = $rez->fetch_all(MYSQLI_ASSOC);
 ?>
 <!doctype html>

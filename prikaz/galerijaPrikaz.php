@@ -36,7 +36,7 @@ if (($_GET['action'] ?? '') === 'delete' && isset($_GET['id'])) {
 }
 
 
-$galerije = $conn->query("SELECT * FROM `umetnickadela` ORDER BY `id_galerije` DESC")->fetch_all(MYSQLI_ASSOC);
+$galerije = $conn->query("SELECT * FROM `galerija` ORDER BY `id_galerije` DESC")->fetch_all(MYSQLI_ASSOC);
 ?>
 <!doctype html>
 <html lang="sr">
