@@ -1,27 +1,21 @@
 <?php
-require_once 'db.php';        
+require_once 'db.php';
 require_once 'Auth.php';
 
-$auth = new Auth($db);
+$auth = new Auth($conn);
 $message = "";
-
-
-$baza = new Baza();          
-$db = $baza->getConnection(); 
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $username = trim($_POST['username']);
     $password = $_POST['password'];
 
     if ($auth->login($username, $password)) {
-        header("Location: index.html"); 
+        header("Location: index.php");
         exit;
     } else {
         $message = "Pogrešno korisničko ime ili lozinka.";
     }
-    
 }
-
 ?>
 <!DOCTYPE html>
 <html lang="sr">

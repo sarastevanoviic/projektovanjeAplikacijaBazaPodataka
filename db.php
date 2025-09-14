@@ -1,29 +1,14 @@
 <?php
-
-class Baza {
-    private $host = "localhost";
-    private $username = "root";
-    private $password = "";
-    private $dbname = "umetnickadela";
-    public $conn;
-
-       public function __construct() {
-        try {
-            $this->conn = new PDO("mysql:host={$this->host};dbname={$this->dbname};charset=utf8",
-                $this->username,
-                $this->password
-            );
-            $this->conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-              echo "Konekcija uspešna!";
-        } catch (PDOException $e) {
-            die("Konekcija neuspešna: " . $e->getMessage());
-        }
-    }
-
-    // Metod za pristup konekciji
-    public function getConnection() {
-        return $this->conn;
-    }
+// Podaci za konekciju
+$servername = "localhost"; // Naziv servera
+$username = "root"; // Korisničko ime
+$password = ""; // Lozinka
+$database = "umetnickadela"; // Naziv baze podataka
+// Konekcija sa bazom
+$conn = new mysqli($servername, $username, $password, $database);
+// Provera konekcije
+if ($conn->connect_error) {
+    die("Greška prilikom povezivanja sa bazom podataka: " . 
+    $conn->connect_error);
 }
 ?>
-
