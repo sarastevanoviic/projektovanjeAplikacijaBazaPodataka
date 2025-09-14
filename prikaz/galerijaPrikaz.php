@@ -1,6 +1,6 @@
 <?php
 require_once "db.php";
-require_once "Galerija.php";
+require_once "galerija.php";
 
 // instanca modela
 $model = new Galerija($conn);

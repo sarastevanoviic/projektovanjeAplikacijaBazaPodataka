@@ -1,6 +1,6 @@
 <?php
 require_once "db.php";
-require_once "UmetnickoDelo.php";
+require_once "umetnickoDelo.php";
 
 // instanca modela
 $model = new UmetnickoDelo($conn);

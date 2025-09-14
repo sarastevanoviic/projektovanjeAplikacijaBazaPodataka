@@ -7,7 +7,7 @@ class Korisnik {
         $this->conn = $conn; 
     }
 
-    // Dohvati korisnika po korisničkom imenu
+    // Vrati korisnika po korisničkom imenu
     public function getKorisnik(string $username): ?array {
         $sql = "SELECT id_korisnika, korisnicko_ime, lozinka 
                 FROM {$this->table} 
@@ -19,11 +19,12 @@ class Korisnik {
         return $rez ?: null;
     }
 
-    // Kreiraj korisnika
-    public function createKorisnik(string $username, string $passwordHash): bool {
+    // Kreiraj korisnika (trenutno plain lozinka; po želji pređi na hash)
+    public function createKorisnik(string $username, string $password): bool {
         $sql = "INSERT INTO {$this->table} (korisnicko_ime, lozinka) VALUES (?, ?)";
         $stmt = $this->conn->prepare($sql);
-        $stmt->bind_param("ss", $username, $passwordHash);
+        $stmt->bind_param("ss", $username, $password);
         return $stmt->execute();
     }
 }
+?>

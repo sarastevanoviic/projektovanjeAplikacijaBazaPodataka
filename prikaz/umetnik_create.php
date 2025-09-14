@@ -1,7 +1,7 @@
 <?php
 require_once 'db.php';
-require_once 'Auth.php';
-require_once 'Umetnik.php';
+require_once 'auth.php';
+require_once 'umetnik.php';
 
 $auth = new Auth($conn);
 if (!$auth->isLoggedIn()) { header('Location: login.php'); exit; }

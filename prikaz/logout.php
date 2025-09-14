@@ -1,6 +1,6 @@
 <?php
 require_once 'db.php';
-require_once 'Auth.php';
+require_once 'auth.php';
 
 $auth = new Auth($conn);
 

@@ -1,5 +1,4 @@
 <?php
-
 class UmetnickoDelo {
     private $conn;
     private $table = "umetnicko_delo";
@@ -8,6 +7,7 @@ class UmetnickoDelo {
         $this->conn = $conn;
     }
 
+    // CREATE
     public function create($data) {
         $sql = "INSERT INTO $this->table (naziv, opis, godina, idumetnik, idgalerije) 
                 VALUES (?, ?, ?, ?, ?)";
@@ -22,6 +22,7 @@ class UmetnickoDelo {
         return $stmt->execute();
     }
 
+    // READ
     public function read($id) {
         $sql = "SELECT * FROM $this->table WHERE idumetnickogdela = ?";
         $stmt = $this->conn->prepare($sql);
@@ -31,12 +32,13 @@ class UmetnickoDelo {
         return $result->fetch_assoc();
     }
 
+    // UPDATE
     public function update($id, $data) {
         $sql = "UPDATE $this->table 
                 SET naziv = ?, opis = ?, godina = ?, idumetnik = ?, idgalerije = ? 
                 WHERE idumetnickogdela = ?";
         $stmt = $this->conn->prepare($sql);
-        $stmt->bind_param("ssiii i",
+        $stmt->bind_param("ssiiii",
             $data['naziv'],
             $data['opis'],
             $data['godina'],
@@ -47,6 +49,7 @@ class UmetnickoDelo {
         return $stmt->execute();
     }
 
+    // DELETE
     public function delete($id) {
         $sql = "DELETE FROM $this->table WHERE idumetnickogdela = ?";
         $stmt = $this->conn->prepare($sql);

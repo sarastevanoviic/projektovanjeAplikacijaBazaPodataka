@@ -1,7 +1,7 @@
 <?php
-require_once 'db.php';
-require_once 'Auth.php';
-require_once 'umetnik.php'; // vodi računa o nazivu fajla/klase
+require_once __DIR__ . '/../baza/db.php';
+require_once __DIR__ . '/../php/auth.php';
+require_once __DIR__ . '/../php/umetnik.php';
 
 $auth = new Auth($conn);
 if (!$auth->isLoggedIn()) {
