@@ -3,37 +3,75 @@ require_once 'db.php';
 require_once 'Auth.php';
 
 $auth = new Auth($conn);
-$message = "";
+$msg = '';
+$err = '';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $username = trim($_POST['username']);
-    $password = $_POST['password'];
+  // Bezbednije dohvaćanje unosa
+  $u = isset($_POST['username']) ? trim($_POST['username']) : '';
+  $p = $_POST['password'] ?? '';
 
-    if ($auth->register($username, $password)) {
-        $message = "Uspešno ste se registrovali! Možete se prijaviti.";
+  // Jednostavna validacija
+  if ($u === '' || $p === '') {
+    $err = 'Popuni korisničko ime i lozinku.';
+  } elseif (mb_strlen($u) < 3) {
+    $err = 'Korisničko ime mora imati bar 3 karaktera.';
+  } elseif (mb_strlen($p) < 4) {
+    $err = 'Lozinka mora imati bar 4 karaktera.';
+  } else {
+    if ($auth->register($u, $p)) {
+      // Ako želiš odmah preusmerenje na login:
+      // header('Location: login.php?ok=1'); exit;
+      $msg = 'Uspešno! Sada se prijavi.';
     } else {
-        $message = "Korisničko ime već postoji ili je došlo do greške.";
+      $err = 'Korisničko ime već postoji ili je došlo do greške.';
     }
+  }
 }
 ?>
-<!DOCTYPE html>
+<!doctype html>
 <html lang="sr">
 <head>
-    <meta charset="UTF-8">
-    <title>Registracija</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Registracija</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
-<body>
-    <h2>Registracija</h2>
-    <form method="POST" action="">
-        <label>Korisničko ime:</label><br>
-        <input type="text" name="username" required><br><br>
+<body class="bg-light">
+<div class="container py-5">
+  <div class="row justify-content-center">
+    <div class="col-md-5">
+      <div class="card shadow-sm">
+        <div class="card-body">
+          <h4 class="mb-3">Registracija</h4>
 
-        <label>Lozinka:</label><br>
-        <input type="password" name="password" required><br><br>
+          <?php if ($msg): ?>
+            <div class="alert alert-success"><?= htmlspecialchars($msg, ENT_QUOTES, 'UTF-8') ?></div>
+          <?php endif; ?>
+          <?php if ($err): ?>
+            <div class="alert alert-danger"><?= htmlspecialchars($err, ENT_QUOTES, 'UTF-8') ?></div>
+          <?php endif; ?>
 
-        <button type="submit">Registruj se</button>
-    </form>
-    <p><?= $message ?></p>
-    <p>Već imate nalog? <a href="login.php">Prijavite se</a></p>
+          <form method="post" novalidate>
+            <div class="mb-3">
+              <label class="form-label">Korisničko ime</label>
+              <input class="form-control" name="username" required>
+            </div>
+            <div class="mb-3">
+              <label class="form-label">Lozinka</label>
+              <input type="password" class="form-control" name="password" required>
+            </div>
+            <button class="btn btn-success w-100">Registruj se</button>
+          </form>
+
+          <div class="text-center mt-3">
+            Već imaš nalog? <a href="login.php">Prijava</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

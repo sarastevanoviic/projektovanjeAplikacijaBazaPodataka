@@ -1,38 +1,29 @@
 <?php
+class Korisnik {
+    private mysqli $conn;
+    private string $table = "korisnici";
 
-class Korisnik{
-    private $conn;
-    private $table = "korisnik";
-
-    public function __construct($db) {
-        $this->conn = $db;
+    public function __construct(mysqli $conn){ 
+        $this->conn = $conn; 
     }
 
-    public function register($username, $password) {
-        if ($this->getKorisnik($username)) {
-            return false; 
-        }
-
-        $hash = password_hash($password, PASSWORD_DEFAULT);
-
-        $stmt = $this->conn->prepare("INSERT INTO $this->table (username, password) VALUES (:username, :password)");
-        try {
-            return $stmt->execute([':username' => $username, ':password' => $hash]);
-        } catch (PDOException $e) {
-           
-            return false;
-        }
+    // Dohvati korisnika po korisničkom imenu
+    public function getKorisnik(string $username): ?array {
+        $sql = "SELECT id_korisnika, korisnicko_ime, lozinka 
+                FROM {$this->table} 
+                WHERE korisnicko_ime = ? LIMIT 1";
+        $stmt = $this->conn->prepare($sql);
+        $stmt->bind_param("s", $username);
+        $stmt->execute();
+        $rez = $stmt->get_result()->fetch_assoc();
+        return $rez ?: null;
     }
 
-    public function createKorisnik($username, $password) {
-        $stmt = $this->conn->prepare("INSERT INTO korisnici (username, password) VALUES (?, ?)");
-        return $stmt->execute([$username, $password]);
-    }
-   
-    public function getKorisnik($username) {
-        $stmt = $this->conn->prepare("SELECT * FROM $this->table WHERE username = :username");
-        $stmt->execute([':username' => $username]);
-        return $stmt->fetch(PDO::FETCH_ASSOC);
+    // Kreiraj korisnika
+    public function createKorisnik(string $username, string $passwordHash): bool {
+        $sql = "INSERT INTO {$this->table} (korisnicko_ime, lozinka) VALUES (?, ?)";
+        $stmt = $this->conn->prepare($sql);
+        $stmt->bind_param("ss", $username, $passwordHash);
+        return $stmt->execute();
     }
 }
-?>

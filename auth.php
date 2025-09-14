@@ -5,47 +5,43 @@ require_once 'Korisnik.php';
 class Auth {
     private $korisnik;
 
-    public function __construct($conn) {
+    public function __construct($conn){
         $this->korisnik = new Korisnik($conn);
-        if (session_status() === PHP_SESSION_NONE) {
-            session_start();
-        }
+        if (session_status() === PHP_SESSION_NONE) session_start();
     }
 
-    public function login($username, $password) {
-        $user = $this->korisnik->getKorisnik($username);
-
-        if ($user && password_verify($password, $user['password'])) {
+    public function login($u, $p){
+        $user = $this->korisnik->getKorisnik($u);
+        if ($user && $p === $user['lozinka']) { 
+            // ako želiš hash: password_verify($p, $user['lozinka'])
             session_regenerate_id(true);
             $_SESSION['korisnik'] = [
-                'id' => $user['id'],
-                'username' => $user['username']
+                'id' => $user['id_korisnika'],
+                'username' => $user['korisnicko_ime']
             ];
             return true;
         }
         return false;
     }
 
-    public function register($username, $password) {
-        $user = $this->korisnik->getKorisnik($username);
-        if ($user) {
-            return false; // već postoji
-        }
-        $hashedPassword = password_hash($password, PASSWORD_DEFAULT);
-        return $this->korisnik->createKorisnik($username, $hashedPassword);
+    public function register($u, $p){
+        if($this->korisnik->getKorisnik($u)) return false;
+        // ako koristiš plain tekst lozinke, onda: $hash = $p;
+        // preporuka: $hash = password_hash($p, PASSWORD_DEFAULT);
+        $hash = $p;
+        return $this->korisnik->createKorisnik($u, $hash);
     }
 
-    public function logout() {
-        unset($_SESSION['korisnik']);
+    public function logout(){
+        $_SESSION = [];
         session_destroy();
     }
 
-    public function isLoggedIn() {
+    public function isLoggedIn(){
         return isset($_SESSION['korisnik']);
     }
 
-    public function getUser() {
+    public function getUser(){ 
         return $_SESSION['korisnik'] ?? null;
     }
 }
-?>

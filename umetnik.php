@@ -1,50 +1,28 @@
 <?php
+require_once 'Crud.php';
 
-class Umetnik implements Crud{
+class Umetnik implements Crud {
+  private $conn; private $table="umetnik";
+  public function __construct($conn){ $this->conn=$conn; }
 
-    private $conn;
-    private $table = "umetnik";
-
-    public function __construct($db) {
-        $this->conn = $db;
-    }
-
-    public function create($data) {
-        $sql = "INSERT INTO $this->table (ime, prezime, biografija) 
-                VALUES (:ime, :prezime, :biografija)";
-        $stmt = $this->conn->prepare($sql);
-        $stmt->execute([
-            ':ime' => $data['ime'],
-            ':prezime' => $data['prezime'],
-            ':biografija' => $data['biografija']
-        ]);
-    }
-
-    public function read($id) {
-        $sql = "SELECT * FROM $this->table WHERE idumetnika = :id";
-        $stmt = $this->conn->prepare($sql);
-        $stmt->execute([':id' => $id]);
-        return $stmt->fetch(PDO::FETCH_ASSOC);
-    }
-
-    public function update($id, $data) {
-        $sql = "UPDATE $this->table 
-                SET ime = :ime, prezime = :prezime, biografija = :biografija 
-                WHERE idumetnika = :id";
-        $stmt = $this->conn->prepare($sql);
-        $stmt->execute([
-            ':ime' => $data['ime'],
-            ':prezime' => $data['prezime'],
-            ':biografija' => $data['biografija'],
-            ':id' => $id
-        ]);
-    }
-
-    public function delete($id) {
-        $sql = "DELETE FROM $this->table WHERE idumetnika = :id";
-        $stmt = $this->conn->prepare($sql);
-        $stmt->execute([':id' => $id]);
-    }
+  public function create($data){
+    $stmt=$this->conn->prepare("INSERT INTO $this->table (ime,prezime,biografija) VALUES (?,?,?)");
+    $stmt->bind_param("sss",$data['ime'],$data['prezime'],$data['biografija']);
+    return $stmt->execute();
+  }
+  public function read($id){
+    $stmt=$this->conn->prepare("SELECT * FROM $this->table WHERE idumetnika=?");
+    $stmt->bind_param("i",$id); $stmt->execute();
+    return $stmt->get_result()->fetch_assoc();
+  }
+  public function update($id,$data){
+    $stmt=$this->conn->prepare("UPDATE $this->table SET ime=?,prezime=?,biografija=? WHERE idumetnika=?");
+    $stmt->bind_param("sssi",$data['ime'],$data['prezime'],$data['biografija'],$id);
+    return $stmt->execute();
+  }
+  public function delete($id){
+    $stmt=$this->conn->prepare("DELETE FROM $this->table WHERE idumetnika=?");
+    $stmt->bind_param("i",$id);
+    return $stmt->execute();
+  }
 }
-
-?>
