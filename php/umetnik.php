@@ -11,17 +11,17 @@ class Umetnik implements Crud {
     return $stmt->execute();
   }
   public function read($id){
-    $stmt=$this->conn->prepare("SELECT * FROM $this->table WHERE idumetnika=?");
+    $stmt=$this->conn->prepare("SELECT * FROM $this->table WHERE id_umetnika=?");
     $stmt->bind_param("i",$id); $stmt->execute();
     return $stmt->get_result()->fetch_assoc();
   }
   public function update($id,$data){
-    $stmt=$this->conn->prepare("UPDATE $this->table SET ime=?,prezime=?,biografija=? WHERE idumetnika=?");
+    $stmt=$this->conn->prepare("UPDATE $this->table SET ime=?,prezime=?,biografija=? WHERE id_umetnika=?");
     $stmt->bind_param("sssi",$data['ime'],$data['prezime'],$data['biografija'],$id);
     return $stmt->execute();
   }
   public function delete($id){
-    $stmt=$this->conn->prepare("DELETE FROM $this->table WHERE idumetnika=?");
+    $stmt=$this->conn->prepare("DELETE FROM $this->table WHERE id_umetnika=?");
     $stmt->bind_param("i",$id);
     return $stmt->execute();
   }

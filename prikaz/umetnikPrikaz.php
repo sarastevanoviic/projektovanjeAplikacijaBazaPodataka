@@ -1,11 +1,11 @@
 <?php
-// ✅ ispravne putanje prema tvojoj strukturi
+
 require_once __DIR__ . '/../baza/db.php';
 require_once __DIR__ . '/../php/auth.php';
 require_once __DIR__ . '/../php/crud.php';
 require_once __DIR__ . '/../php/umetnik.php';
 
-// ✅ zaštita pristupa (mora login)
+
 $auth = new Auth($conn);
 if (!$auth->isLoggedIn()) { header('Location: login.php'); exit; }
 
@@ -107,7 +107,7 @@ $umetnici = $conn->query("SELECT * FROM umetnik ORDER BY idumetnika DESC")->fetc
           <tbody>
           <?php foreach ($umetnici as $u): ?>
             <tr>
-              <td><?= (int)$u['idumetnika'] ?></td>
+              <td><?= (int)$u['id_umetnika'] ?></td>
               <td><?= e($u['ime']) ?></td>
               <td><?= e($u['prezime']) ?></td>
               <td><?= nl2br(e($u['biografija'])) ?></td>
@@ -115,13 +115,13 @@ $umetnici = $conn->query("SELECT * FROM umetnik ORDER BY idumetnika DESC")->fetc
                 <!-- Dugme: IZMENI (otvara modal) -->
                 <button class="btn btn-sm btn-outline-secondary"
                         data-bs-toggle="modal"
-                        data-bs-target="#editUmetnik<?= (int)$u['idumetnika'] ?>">
+                        data-bs-target="#editUmetnik<?= (int)$u['id_umetnika'] ?>">
                   Izmeni
                 </button>
 
                 <!-- Link: OBRIŠI -->
                 <a class="btn btn-sm btn-outline-danger"
-                   href="?action=delete&id=<?= (int)$u['idumetnika'] ?>"
+                   href="?action=delete&id=<?= (int)$u['id_umetnika'] ?>"
                    onclick="return confirm('Da li sigurno želiš da obrišeš ovog umetnika?');">
                   Obriši
                 </a>
@@ -129,16 +129,16 @@ $umetnici = $conn->query("SELECT * FROM umetnik ORDER BY idumetnika DESC")->fetc
             </tr>
 
             <!-- MODAL: Izmena umetnika -->
-            <div class="modal fade" id="editUmetnik<?= (int)$u['idumetnika'] ?>" tabindex="-1" aria-hidden="true">
+            <div class="modal fade" id="editUmetnik<?= (int)$u['id_umetnika'] ?>" tabindex="-1" aria-hidden="true">
               <div class="modal-dialog">
                 <form class="modal-content" method="post">
                   <div class="modal-header">
-                    <h5 class="modal-title">Izmena umetnika #<?= (int)$u['idumetnika'] ?></h5>
+                    <h5 class="modal-title">Izmena umetnika #<?= (int)$u['id_umetnika'] ?></h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Zatvori"></button>
                   </div>
                   <div class="modal-body">
                     <input type="hidden" name="action" value="update">
-                    <input type="hidden" name="idumetnika" value="<?= (int)$u['idumetnika'] ?>">
+                    <input type="hidden" name="id_umetnika" value="<?= (int)$u['id_umetnika'] ?>">
 
                     <div class="mb-3">
                       <label class="form-label">Ime</label>

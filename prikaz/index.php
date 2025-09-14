@@ -11,7 +11,8 @@ if (!$auth->isLoggedIn()) {
 $user = $auth->getUser();
 
 // učitaj listu umetnika
-$rez = $conn->query("SELECT * FROM umetnik ORDER BY idumetnika DESC");
+$rez = $conn->query("SELECT * FROM umetnik ORDER BY id_umetnika DESC");
+
 
 // helper za HTML escape
 function e($s){ return htmlspecialchars((string)$s, ENT_QUOTES, 'UTF-8'); }
@@ -75,7 +76,7 @@ function e($s){ return htmlspecialchars((string)$s, ENT_QUOTES, 'UTF-8'); }
               <tbody>
               <?php while($r = $rez->fetch_assoc()): ?>
                 <tr>
-                  <td><?= (int)$r['idumetnika'] ?></td>
+                  <td><?= (int)$r['id_umetnika'] ?></td>
                   <td><?= e($r['ime']) ?></td>
                   <td><?= e($r['prezime']) ?></td>
                   <td><?= e($r['biografija']) ?></td>
