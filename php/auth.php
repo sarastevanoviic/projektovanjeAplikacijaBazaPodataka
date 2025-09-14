@@ -1,6 +1,6 @@
 <?php
 
-require_once __DIR__ . '/../baza/db.php';
+
 require_once __DIR__ . '/korisnik.php';
 
 
