@@ -5,6 +5,10 @@ require_once 'Auth.php';
 $auth = new Auth($db);
 $message = "";
 
+
+$baza = new Baza();          
+$db = $baza->getConnection(); 
+
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $username = trim($_POST['username']);
     $password = $_POST['password'];
