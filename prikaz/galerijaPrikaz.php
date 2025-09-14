@@ -1,6 +1,6 @@
 <?php
-require_once "db.php";
-require_once "galerija.php";
+require_once __DIR__ . '/../baza/db.php';
+require_once __DIR__ . '/../php/galerija.php';
 
 // instanca modela
 $model = new Galerija($conn);

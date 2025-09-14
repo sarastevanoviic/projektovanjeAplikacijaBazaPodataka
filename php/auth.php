@@ -1,7 +1,8 @@
 <?php
 
-require_once 'db.php';
-require_once 'korisnik.php';
+require_once __DIR__ . '/../baza/db.php';
+require_once __DIR__ . '/korisnik.php';
+
 
 class Auth {
     private Korisnik $korisnik;

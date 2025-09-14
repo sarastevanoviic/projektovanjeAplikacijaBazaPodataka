@@ -1,6 +1,6 @@
 <?php
-require_once 'db.php';
-require_once 'auth.php';
+require_once __DIR__ . '/../baza/db.php';
+require_once __DIR__ . '/../php/auth.php';
 
 $auth = new Auth($conn);
 
@@ -23,3 +23,4 @@ if (ini_get("session.use_cookies")) {
 
 header("Location: login.php");
 exit;
+?>

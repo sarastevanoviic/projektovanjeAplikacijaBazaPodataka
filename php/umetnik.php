@@ -1,5 +1,5 @@
 <?php
-require_once 'Crud.php';
+require_once __DIR__ . '/crud.php';
 
 class Umetnik implements Crud {
   private $conn; private $table="umetnik";

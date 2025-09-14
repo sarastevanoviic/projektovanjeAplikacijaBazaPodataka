@@ -1,7 +1,7 @@
 <?php
 class Korisnik {
     private mysqli $conn;
-    private string $table = "korisnici";
+    private string $table = "korisnik";
 
     public function __construct(mysqli $conn){ 
         $this->conn = $conn; 

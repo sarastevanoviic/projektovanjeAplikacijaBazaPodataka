@@ -3,6 +3,7 @@ require_once __DIR__ . '/../baza/db.php';
 require_once __DIR__ . '/../php/korisnik.php';
 require_once __DIR__ . '/../php/auth.php';
 
+
 $auth = new Auth($conn);
 
 // Ako je već ulogovan → na početnu

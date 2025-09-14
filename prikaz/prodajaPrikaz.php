@@ -1,6 +1,7 @@
 <?php
-require_once "db.php";
-require_once "prodaja.php";
+require_once __DIR__ . '/../baza/db.php';
+require_once __DIR__ . '/../php/auth.php';
+require_once __DIR__ . '/../php/prodaja.php';
 
 $model = new Prodaja($conn);
 

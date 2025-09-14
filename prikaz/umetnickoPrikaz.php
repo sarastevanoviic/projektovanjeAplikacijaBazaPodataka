@@ -1,14 +1,13 @@
 <?php
-require_once "db.php";
-require_once "umetnickoDelo.php";
+require_once __DIR__ . '/../baza/db.php';
+require_once __DIR__ . '/../php/auth.php';
+require_once __DIR__ . '/../php/umetnickoDelo.php';
 
-// instanca modela
 $model = new UmetnickoDelo($conn);
 
-// helper funkcija za XSS zaštitu
 function e($s){ return htmlspecialchars((string)$s, ENT_QUOTES, 'UTF-8'); }
 
-// ROUTING: create / update / delete
+
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $action = $_POST['action'] ?? '';
     if ($action === 'create') {
