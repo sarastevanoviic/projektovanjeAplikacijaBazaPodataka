@@ -5,7 +5,9 @@ require_once __DIR__ . '/../php/prodaja.php';
 
 $model = new Prodaja($conn);
 
-function e($s){ return htmlspecialchars((string)$s, ENT_QUOTES, 'UTF-8'); }
+function e($s){ 
+  return htmlspecialchars((string)$s, ENT_QUOTES, 'UTF-8'); 
+}
 
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {

@@ -2,8 +2,11 @@
 require_once __DIR__ . '/../baza/db.php';
 require_once __DIR__ . '/../php/auth.php';
 require_once __DIR__ . '/../php/umetnik.php';
+
 $auth = new Auth($conn);
-if (!$auth->isLoggedIn()) { header('Location: login.php'); exit; }
+if (!$auth->isLoggedIn()) {
+   header('Location: login.php'); exit; 
+  }
 
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
   header('Location: index.php');

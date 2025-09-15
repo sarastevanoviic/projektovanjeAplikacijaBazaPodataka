@@ -1,28 +1,30 @@
 <?php
-
 require_once __DIR__ . '/../baza/db.php';
 require_once __DIR__ . '/../php/auth.php';
 require_once __DIR__ . '/../php/crud.php';
 require_once __DIR__ . '/../php/umetnik.php';
 
-
 $auth = new Auth($conn);
-if (!$auth->isLoggedIn()) { header('Location: login.php'); exit; }
+if (!$auth->isLoggedIn()) { 
+  header('Location: login.php'); 
+  exit; 
+}
 
 $model = new Umetnik($conn);
 
-
-function e($s){ return htmlspecialchars((string)$s, ENT_QUOTES, 'UTF-8'); }
-
+function e($s){ 
+  return htmlspecialchars((string)$s, ENT_QUOTES, 'UTF-8');
+}
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $action = $_POST['action'] ?? '';
     if ($action === 'create') {
         $data = [
-            'ime'        => $_POST['ime'] ?? '',
-            'prezime'    => $_POST['prezime'] ?? '',
-            'biografija' => $_POST['biografija'] ?? '',
+            'ime'        => trim($_POST['ime'] ?? ''),
+            'prezime'    => trim($_POST['prezime'] ?? ''),
+            'biografija' => trim($_POST['biografija'] ?? ''),
         ];
+        
         $model->create($data);
         header("Location: " . $_SERVER['PHP_SELF']);
         exit;
@@ -30,16 +32,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if ($action === 'update') {
         $id   = (int)($_POST['id_umetnika'] ?? 0);
         $data = [
-            'ime'        => $_POST['ime'] ?? '',
-            'prezime'    => $_POST['prezime'] ?? '',
-            'biografija' => $_POST['biografija'] ?? '',
+            'ime'        => trim($_POST['ime'] ?? ''),
+            'prezime'    => trim($_POST['prezime'] ?? ''),
+            'biografija' => trim($_POST['biografija'] ?? ''),
         ];
+        
         $model->update($id, $data);
         header("Location: " . $_SERVER['PHP_SELF']);
         exit;
     }
 }
-
 
 if (($_GET['action'] ?? '') === 'delete' && isset($_GET['id'])) {
     $id = (int)$_GET['id'];
@@ -47,7 +49,6 @@ if (($_GET['action'] ?? '') === 'delete' && isset($_GET['id'])) {
     header("Location: " . strtok($_SERVER['REQUEST_URI'], '?'));
     exit;
 }
-
 
 $umetnici = $conn->query("SELECT * FROM umetnik ORDER BY id_umetnika DESC")->fetch_all(MYSQLI_ASSOC);
 ?>
@@ -62,7 +63,14 @@ $umetnici = $conn->query("SELECT * FROM umetnik ORDER BY id_umetnika DESC")->fet
 <body class="bg-light">
 <div class="container py-4">
 
-  
+
+  <?php if (isset($_GET['ok'])): ?>
+    <div class="alert alert-success">Uspešno sačuvano.</div>
+  <?php endif; ?>
+  <?php if (isset($_GET['err'])): ?>
+    <div class="alert alert-danger"><?= e($_GET['err']) ?></div>
+  <?php endif; ?>
+
   <div class="card mb-4 shadow-sm">
     <div class="card-body">
       <h5 class="card-title">Dodaj umetnika</h5>
@@ -87,7 +95,7 @@ $umetnici = $conn->query("SELECT * FROM umetnik ORDER BY id_umetnika DESC")->fet
     </div>
   </div>
 
-
+  
   <div class="card shadow-sm">
     <div class="card-body">
       <div class="d-flex justify-content-between align-items-center mb-2">
@@ -115,7 +123,11 @@ $umetnici = $conn->query("SELECT * FROM umetnik ORDER BY id_umetnika DESC")->fet
                 
                 <button class="btn btn-sm btn-outline-secondary"
                         data-bs-toggle="modal"
-                        data-bs-target="#editUmetnik<?= (int)$u['id_umetnika'] ?>">
+                        data-bs-target="#editUmetnik"
+                        data-id="<?= (int)$u['id_umetnika'] ?>"
+                        data-ime="<?= e($u['ime']) ?>"
+                        data-prezime="<?= e($u['prezime']) ?>"
+                        data-bio="<?= e($u['biografija']) ?>">
                   Izmeni
                 </button>
 
@@ -126,38 +138,6 @@ $umetnici = $conn->query("SELECT * FROM umetnik ORDER BY id_umetnika DESC")->fet
                 </a>
               </td>
             </tr>
-
-          
-            <div class="modal fade" id="editUmetnik<?= (int)$u['id_umetnika'] ?>" tabindex="-1" aria-hidden="true">
-              <div class="modal-dialog">
-                <form class="modal-content" method="post">
-                  <div class="modal-header">
-                    <h5 class="modal-title">Izmena umetnika #<?= (int)$u['id_umetnika'] ?></h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Zatvori"></button>
-                  </div>
-                  <div class="modal-body">
-                    <input type="hidden" name="action" value="update">
-                    <input type="hidden" name="id_umetnika" value="<?= (int)$u['id_umetnika'] ?>">
-
-                    <div class="mb-3">
-                      <label class="form-label">Ime</label>
-                      <input name="ime" class="form-control" value="<?= e($u['ime']) ?>" required>
-                    </div>
-                    <div class="mb-3">
-                      <label class="form-label">Prezime</label>
-                      <input name="prezime" class="form-control" value="<?= e($u['prezime']) ?>" required>
-                    </div>
-                    <div class="mb-3">
-                      <label class="form-label">Biografija</label>
-                      <textarea name="biografija" class="form-control" rows="3"><?= e($u['biografija']) ?></textarea>
-                    </div>
-                  </div>
-                  <div class="modal-footer">
-                    <button class="btn btn-primary">Sačuvaj izmene</button>
-                  </div>
-                </form>
-              </div>
-            </div>
           <?php endforeach; ?>
           </tbody>
         </table>
@@ -166,6 +146,50 @@ $umetnici = $conn->query("SELECT * FROM umetnik ORDER BY id_umetnika DESC")->fet
   </div>
 
 </div>
+
+<div class="modal fade" id="editUmetnik" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog">
+    <form class="modal-content" method="post">
+      <div class="modal-header">
+        <h5 class="modal-title">Izmena umetnika</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Zatvori"></button>
+      </div>
+      <div class="modal-body">
+        <input type="hidden" name="action" value="update">
+        <input type="hidden" name="id_umetnika" id="m-id">
+
+        <div class="mb-3">
+          <label class="form-label">Ime</label>
+          <input name="ime" id="m-ime" class="form-control" required>
+        </div>
+        <div class="mb-3">
+          <label class="form-label">Prezime</label>
+          <input name="prezime" id="m-prezime" class="form-control" required>
+        </div>
+        <div class="mb-3">
+          <label class="form-label">Biografija</label>
+          <textarea name="biografija" id="m-bio" class="form-control" rows="3"></textarea>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" type="button" data-bs-dismiss="modal">Otkaži</button>
+        <button class="btn btn-primary">Sačuvaj</button>
+      </div>
+    </form>
+  </div>
+</div>
+
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+
+document.getElementById('editUmetnik')
+  .addEventListener('show.bs.modal', function (ev) {
+    const btn = ev.relatedTarget;
+    document.getElementById('m-id').value      = btn.getAttribute('data-id');
+    document.getElementById('m-ime').value     = btn.getAttribute('data-ime');
+    document.getElementById('m-prezime').value = btn.getAttribute('data-prezime');
+    document.getElementById('m-bio').value     = btn.getAttribute('data-bio');
+  });
+</script>
 </body>
 </html>

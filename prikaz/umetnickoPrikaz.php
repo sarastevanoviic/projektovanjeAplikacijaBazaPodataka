@@ -5,7 +5,9 @@ require_once __DIR__ . '/../php/umetnickoDelo.php';
 
 $model = new UmetnickoDelo($conn);
 
-function e($s){ return htmlspecialchars((string)$s, ENT_QUOTES, 'UTF-8'); }
+function e($s){ 
+  return htmlspecialchars((string)$s, ENT_QUOTES, 'UTF-8');
+ }
 
 
 $action = $_POST['action'] ?? '';

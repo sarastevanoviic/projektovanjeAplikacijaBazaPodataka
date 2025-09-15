@@ -4,7 +4,9 @@ require_once __DIR__ . '/../php/auth.php';
 require_once __DIR__ . '/../php/umetnik.php';
 
 $auth = new Auth($conn);
-if (!$auth->isLoggedIn()) { header('Location: login.php'); exit; }
+if (!$auth->isLoggedIn()) { 
+  header('Location: login.php'); exit; 
+}
 
 
 $id = 0;

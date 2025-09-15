@@ -58,7 +58,7 @@ function e($s){ return htmlspecialchars((string)$s, ENT_QUOTES, 'UTF-8'); }
         <li class="nav-item"><a class="nav-link" href="galerijaPrikaz.php">Galerije</a></li>
         <li class="nav-item"><a class="nav-link" href="prodajaPrikaz.php">Prodaje</a></li>
       </ul>
-      <span class="navbar-text text-white me-3">👤 <?= e($user['username']) ?></span>
+      <span class="navbar-text text-white me-3">Korisnik: <?= e($user['username']) ?></span>
       <a class="btn btn-outline-light btn-sm" href="logout.php">Odjavi se</a>
     </div>
   </div>
