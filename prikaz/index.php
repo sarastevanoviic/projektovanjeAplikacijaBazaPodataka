@@ -10,7 +10,27 @@ if (!$auth->isLoggedIn()) {
 }
 $user = $auth->getUser();
 
+
 $rez = $conn->query("SELECT * FROM umetnik ORDER BY id_umetnika DESC");
+
+
+$counts = [
+  'umetnici' => (int)$conn->query("SELECT COUNT(*) n FROM umetnik")->fetch_assoc()['n'],
+  'dela'     => (int)$conn->query("SELECT COUNT(*) n FROM umetnicka_dela")->fetch_assoc()['n'],
+  'galerije' => (int)$conn->query("SELECT COUNT(*) n FROM galerija")->fetch_assoc()['n'],
+  'prodaje'  => (int)$conn->query("SELECT COUNT(*) n FROM prodaja")->fetch_assoc()['n'],
+];
+
+$poslednjeProdaje = $conn->query("
+  SELECT p.id_prodaje, p.datum, p.kupac, p.cena,
+         d.naziv_dela,
+         g.naziv_galerije
+  FROM prodaja p
+  LEFT JOIN umetnicka_dela d ON d.id_umetnickogDela = p.umetnicko_delo_id
+  LEFT JOIN galerija g      ON g.id_galerije       = p.galerija_id
+  ORDER BY p.datum DESC, p.id_prodaje DESC
+  LIMIT 5
+")->fetch_all(MYSQLI_ASSOC);
 
 
 function e($s){ return htmlspecialchars((string)$s, ENT_QUOTES, 'UTF-8'); }
@@ -53,6 +73,7 @@ function e($s){ return htmlspecialchars((string)$s, ENT_QUOTES, 'UTF-8'); }
   <?php endif; ?>
 
   <div class="row g-3">
+ 
     <div class="col-md-8">
       <div class="card shadow-sm">
         <div class="card-header d-flex justify-content-between align-items-center">
@@ -130,19 +151,63 @@ function e($s){ return htmlspecialchars((string)$s, ENT_QUOTES, 'UTF-8'); }
       </div>
     </div>
 
-   
     <div class="col-md-4">
       <div class="card shadow-sm h-100">
         <div class="card-body">
-          <h5 class="card-title mb-2">Zdravo, <?= e($user['username']) ?> </h5>
-          <p class="text-muted mb-3">Zdravo! Sve što ti treba je u gornjem meniju:Umetnička Dela, Galerije, Prodaje.</p>
-          <div class="d-grid gap-2">
-            <a class="btn btn-outline-primary" href="umetnikPrikaz.php">Otvori: Umetnici (prikaz)</a>
-            <a class="btn btn-outline-primary" href="umetnickoPrikaz.php">Otvori: Umetnička dela</a>
-            <a class="btn btn-outline-primary" href="galerijaPrikaz.php">Otvori: Galerije</a>
-            <a class="btn btn-outline-primary" href="prodajaPrikaz.php">Otvori: Prodaje</a>
+          <h5 class="card-title mb-2">Zdravo, <?= e($user['username']) ?> 👋</h5>
+          <p class="text-muted mb-3">Kratak pregled sistema.</p>
+
+        
+          <ul class="list-group mb-3">
+            <li class="list-group-item d-flex justify-content-between align-items-center">
+              Umetnici <span class="badge bg-secondary rounded-pill"><?= $counts['umetnici'] ?></span>
+            </li>
+            <li class="list-group-item d-flex justify-content-between align-items-center">
+              Dela <span class="badge bg-secondary rounded-pill"><?= $counts['dela'] ?></span>
+            </li>
+            <li class="list-group-item d-flex justify-content-between align-items-center">
+              Galerije <span class="badge bg-secondary rounded-pill"><?= $counts['galerije'] ?></span>
+            </li>
+            <li class="list-group-item d-flex justify-content-between align-items-center">
+              Prodaje <span class="badge bg-secondary rounded-pill"><?= $counts['prodaje'] ?></span>
+            </li>
+          </ul>
+
+          
+          <h6 class="text-muted">Poslednje prodaje</h6>
+          <div class="list-group mb-3">
+            <?php if ($poslednjeProdaje): ?>
+              <?php foreach ($poslednjeProdaje as $p): ?>
+                <div class="list-group-item d-flex justify-content-between align-items-start">
+                  <div>
+                    <div class="fw-semibold"><?= e($p['naziv_dela'] ?? '—') ?></div>
+                    <small class="text-muted">
+                      <?= e($p['datum']) ?>
+                      <?php if (!empty($p['naziv_galerije'])): ?>
+                        &middot; <?= e($p['naziv_galerije']) ?>
+                      <?php endif; ?>
+                      &middot; <?= e($p['kupac']) ?>
+                    </small>
+                  </div>
+                  <span class="badge bg-light text-dark ms-2">
+                    <?= number_format((float)$p['cena'], 2, ',', '.') ?>
+                  </span>
+                </div>
+              <?php endforeach; ?>
+            <?php else: ?>
+              <div class="list-group-item text-muted">Još uvek nema prodaja.</div>
+            <?php endif; ?>
           </div>
-          <hr>
+
+        
+          <div class="d-grid gap-2">
+            <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modalUmetnik">+ Novi umetnik</button>
+            <a class="btn btn-outline-primary" href="umetnickoPrikaz.php#add">+ Novo delo</a>
+            <a class="btn btn-outline-primary" href="galerijaPrikaz.php#add">+ Nova galerija</a>
+            <a class="btn btn-outline-primary" href="prodajaPrikaz.php#add">+ Nova prodaja</a>
+          </div>
+
+          <hr class="my-3">
           <a class="btn btn-outline-danger btn-sm" href="logout.php">Odjavi se</a>
         </div>
       </div>
