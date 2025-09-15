@@ -154,7 +154,7 @@ function e($s){ return htmlspecialchars((string)$s, ENT_QUOTES, 'UTF-8'); }
     <div class="col-md-4">
       <div class="card shadow-sm h-100">
         <div class="card-body">
-          <h5 class="card-title mb-2">Zdravo, <?= e($user['username']) ?> 👋</h5>
+          <h5 class="card-title mb-2">Zdravo, <?= e($user['username']) ?> </h5>
           <p class="text-muted mb-3">Kratak pregled sistema.</p>
 
         
