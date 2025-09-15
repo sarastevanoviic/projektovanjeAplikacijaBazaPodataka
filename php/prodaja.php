@@ -1,6 +1,6 @@
 <?php
-
-class Prodaja {
+require_once __DIR__ . '/crud.php';
+class Prodaja implements Crud{
     private $conn;
     private $table = "prodaja";
 

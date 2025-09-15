@@ -1,8 +1,6 @@
 <?php
 
-
 require_once __DIR__ . '/korisnik.php';
-
 
 class Auth {
     private Korisnik $korisnik;

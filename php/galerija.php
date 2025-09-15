@@ -1,6 +1,6 @@
 <?php
-
-class Galerija {
+require_once __DIR__ . '/crud.php';
+class Galerija implements Crud {
     private $conn;
     private $table = "galerija";
 
