@@ -4,6 +4,10 @@ require_once __DIR__ . '/../php/auth.php';
 require_once __DIR__ . '/../php/crud.php';
 require_once __DIR__ . '/../php/umetnik.php';
 
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+  error_log('POST payload: ' . print_r($_POST, true));
+}
+
 $auth = new Auth($conn);
 if (!$auth->isLoggedIn()) {
   header('Location: login.php');
