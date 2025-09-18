@@ -9,7 +9,7 @@ if (!$auth->isLoggedIn()) {
    exit;
    }
 
-if ($_SERVER['REQUEST_METHOD'] !== 'POST') { header('Location: umetnici.php'); exit; }
+if ($_SERVER['REQUEST_METHOD'] !== 'POST') { header('Location: index.php'); exit; }
 
 $id        = (int)($_POST['id_umetnika'] ?? 0);
 $ime       = trim($_POST['ime'] ?? '');
@@ -17,7 +17,7 @@ $prezime   = trim($_POST['prezime'] ?? '');
 $biografija= trim($_POST['biografija'] ?? '');
 
 if ($id <= 0 || $ime === '' || $prezime === '') {
-  header('Location: umetnici.php?err='.urlencode('Neispravan unos')); exit;
+  header('Location: index.php?err='.urlencode('Neispravan unos')); exit;
 }
 
 $model = new Umetnik($conn);
@@ -27,5 +27,5 @@ $ok = $model->update($id, [
   'biografija' => $biografija
 ]);
 
-header('Location: umetnici.php?'.($ok ? 'ok=1' : 'err='.urlencode('Greška pri izmeni')));
+header('Location: index.php?'.($ok ? 'ok=1' : 'err='.urlencode('Greška pri izmeni')));
 exit;
