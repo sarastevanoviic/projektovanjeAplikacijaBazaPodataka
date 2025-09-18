@@ -4,15 +4,19 @@ require_once __DIR__ . '/../php/auth.php';
 require_once __DIR__ . '/../php/umetnik.php';
 
 $auth = new Auth($conn);
-if (!$auth->isLoggedIn()) {
-  header('Location: login.php');
-  exit;
+if (!$auth->isLoggedIn()) { 
+  header('Location: login.php'); 
+  exit; 
 }
+
 $user = $auth->getUser();
 
+function e($s){ 
+  return htmlspecialchars((string)$s, ENT_QUOTES, 'UTF-8');
+ }
 
-$rez = $conn->query("SELECT * FROM umetnik ORDER BY id_umetnika DESC");
 
+$umetnici = $conn->query("SELECT * FROM umetnik ORDER BY id_umetnika DESC")->fetch_all(MYSQLI_ASSOC);
 
 $counts = [
   'umetnici' => (int)$conn->query("SELECT COUNT(*) n FROM umetnik")->fetch_assoc()['n'],
@@ -31,10 +35,8 @@ $poslednjeProdaje = $conn->query("
   ORDER BY p.datum DESC, p.id_prodaje DESC
   LIMIT 5
 ")->fetch_all(MYSQLI_ASSOC);
-
-
-function e($s){ return htmlspecialchars((string)$s, ENT_QUOTES, 'UTF-8'); }
 ?>
+
 <!doctype html>
 <html lang="sr">
 <head>
@@ -73,7 +75,6 @@ function e($s){ return htmlspecialchars((string)$s, ENT_QUOTES, 'UTF-8'); }
   <?php endif; ?>
 
   <div class="row g-3">
- 
     <div class="col-md-8">
       <div class="card shadow-sm">
         <div class="card-header d-flex justify-content-between align-items-center">
@@ -93,57 +94,29 @@ function e($s){ return htmlspecialchars((string)$s, ENT_QUOTES, 'UTF-8'); }
                 </tr>
               </thead>
               <tbody>
-              <?php while($r = $rez->fetch_assoc()): ?>
-                <tr>
-                  <td><?= (int)$r['id_umetnika'] ?></td>
-                  <td><?= e($r['ime']) ?></td>
-                  <td><?= e($r['prezime']) ?></td>
-                  <td><?= e($r['biografija']) ?></td>
-                  <td class="text-end">
-                    <button class="btn btn-sm btn-outline-secondary"
-                            data-bs-toggle="modal"
-                            data-bs-target="#edit<?= (int)$r['id_umetnika'] ?>">
-                      Izmeni
-                    </button>
-                    <a class="btn btn-sm btn-outline-danger"
-                       href="umetnik_delete.php?id=<?= (int)$r['id_umetnika'] ?>"
-                       onclick="return confirm('Obriši umetnika?');">
-                      Obriši
-                    </a>
-                  </td>
-                </tr>
+                <?php foreach ($umetnici as $r): ?>
+                  <tr>
+                    <td><?= (int)$r['id_umetnika'] ?></td>
+                    <td><?= e($r['ime']) ?></td>
+                    <td><?= e($r['prezime']) ?></td>
+                    <td><?= e($r['biografija']) ?></td>
+                    <td class="text-end">
+                      <button
+                        class="btn btn-sm btn-outline-secondary"
+                        data-bs-toggle="modal"
+                        data-bs-target="#editUmetnik"
+                        data-id="<?= (int)$r['id_umetnika'] ?>"
+                        data-ime="<?= e($r['ime']) ?>"
+                        data-prezime="<?= e($r['prezime']) ?>"
+                        data-bio="<?= e($r['biografija']) ?>"
+                      >Izmeni</button>
 
-               
-                <div class="modal fade" id="edit<?= (int)$r['id_umetnika'] ?>" tabindex="-1" aria-hidden="true">
-                  <div class="modal-dialog">
-                    <form class="modal-content" method="post" action="umetnik_update.php">
-                      <div class="modal-header">
-                        <h5 class="modal-title">Izmena umetnika #<?= (int)$r['id_umetnika'] ?></h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                      </div>
-                      <div class="modal-body">
-                        <input type="hidden" name="id_umetnika" value="<?= (int)$r['id_umetnika'] ?>">
-                        <div class="mb-3">
-                          <label class="form-label">Ime</label>
-                          <input class="form-control" name="ime" value="<?= e($r['ime']) ?>" required>
-                        </div>
-                        <div class="mb-3">
-                          <label class="form-label">Prezime</label>
-                          <input class="form-control" name="prezime" value="<?= e($r['prezime']) ?>" required>
-                        </div>
-                        <div class="mb-3">
-                          <label class="form-label">Biografija</label>
-                          <textarea class="form-control" name="biografija" rows="3"><?= e($r['biografija']) ?></textarea>
-                        </div>
-                      </div>
-                      <div class="modal-footer">
-                        <button class="btn btn-secondary" type="button" data-bs-dismiss="modal">Otkaži</button>
-                        <button class="btn btn-primary">Sačuvaj</button>
-                      </div>
-                    </form>
-                  </div>
-                </div>
-              <?php endwhile; ?>
+                      <a class="btn btn-sm btn-outline-danger"
+                         href="umetnik_delete.php?id=<?= (int)$r['id_umetnika'] ?>"
+                         onclick="return confirm('Obriši umetnika?');">Obriši</a>
+                    </td>
+                  </tr>
+                <?php endforeach; ?>
               </tbody>
             </table>
           </div>
@@ -154,10 +127,9 @@ function e($s){ return htmlspecialchars((string)$s, ENT_QUOTES, 'UTF-8'); }
     <div class="col-md-4">
       <div class="card shadow-sm h-100">
         <div class="card-body">
-          <h5 class="card-title mb-2">Zdravo, <?= e($user['username']) ?> </h5>
+          <h5 class="card-title mb-2">Zdravo, <?= e($user['username']) ?></h5>
           <p class="text-muted mb-3">Kratak pregled sistema.</p>
 
-        
           <ul class="list-group mb-3">
             <li class="list-group-item d-flex justify-content-between align-items-center">
               Umetnici <span class="badge bg-secondary rounded-pill"><?= $counts['umetnici'] ?></span>
@@ -173,7 +145,6 @@ function e($s){ return htmlspecialchars((string)$s, ENT_QUOTES, 'UTF-8'); }
             </li>
           </ul>
 
-          
           <h6 class="text-muted">Poslednje prodaje</h6>
           <div class="list-group mb-3">
             <?php if ($poslednjeProdaje): ?>
@@ -183,9 +154,7 @@ function e($s){ return htmlspecialchars((string)$s, ENT_QUOTES, 'UTF-8'); }
                     <div class="fw-semibold"><?= e($p['naziv_dela'] ?? '—') ?></div>
                     <small class="text-muted">
                       <?= e($p['datum']) ?>
-                      <?php if (!empty($p['naziv_galerije'])): ?>
-                        &middot; <?= e($p['naziv_galerije']) ?>
-                      <?php endif; ?>
+                      <?php if (!empty($p['naziv_galerije'])): ?>&middot; <?= e($p['naziv_galerije']) ?><?php endif; ?>
                       &middot; <?= e($p['kupac']) ?>
                     </small>
                   </div>
@@ -199,7 +168,6 @@ function e($s){ return htmlspecialchars((string)$s, ENT_QUOTES, 'UTF-8'); }
             <?php endif; ?>
           </div>
 
-        
           <div class="d-grid gap-2">
             <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modalUmetnik">+ Novi umetnik</button>
             <a class="btn btn-outline-primary" href="umetnickoPrikaz.php#add">+ Novo delo</a>
@@ -245,6 +213,46 @@ function e($s){ return htmlspecialchars((string)$s, ENT_QUOTES, 'UTF-8'); }
   </div>
 </div>
 
+<div class="modal fade" id="editUmetnik" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog">
+    <form class="modal-content" method="post" action="umetnik_update.php">
+      <div class="modal-header">
+        <h5 class="modal-title">Izmena umetnika</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Zatvori"></button>
+      </div>
+      <div class="modal-body">
+        <input type="hidden" name="id_umetnika" id="m-id">
+        <div class="mb-3">
+          <label class="form-label">Ime</label>
+          <input name="ime" id="m-ime" class="form-control" required>
+        </div>
+        <div class="mb-3">
+          <label class="form-label">Prezime</label>
+          <input name="prezime" id="m-prezime" class="form-control" required>
+        </div>
+        <div class="mb-3">
+          <label class="form-label">Biografija</label>
+          <textarea name="biografija" id="m-bio" class="form-control" rows="3"></textarea>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" type="button" data-bs-dismiss="modal">Otkaži</button>
+        <button class="btn btn-primary" type="submit">Sačuvaj</button>
+      </div>
+    </form>
+  </div>
+</div>
+
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+
+document.getElementById('editUmetnik').addEventListener('show.bs.modal', function (ev) {
+  const btn = ev.relatedTarget;
+  document.getElementById('m-id').value      = btn.getAttribute('data-id') || '';
+  document.getElementById('m-ime').value     = btn.getAttribute('data-ime') || '';
+  document.getElementById('m-prezime').value = btn.getAttribute('data-prezime') || '';
+  document.getElementById('m-bio').value     = btn.getAttribute('data-bio') || '';
+});
+</script>
 </body>
 </html>
